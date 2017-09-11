@@ -63,27 +63,27 @@ public class GameVisualSimulationTest {
         AI ai1 = new POLightRush(utt, new BFSPathFinding()); 
 //        AI ai2 = new WorkerRush(utt, new BFSPathFinding()); 
         //AI ai1 = new NaiveMCTS(utt);  
-       // AI ai2 = new ContinuingAI(new StrategyTactics(utt));
-        AI ai2 = new ContinuingAI(new PuppetNoPlan(new PuppetSearchAB(
-                100, -1,
-                -1, -1,
-                100,
-                new SingleChoiceConfigurableScript(new FloodFillPathFinding(),
-                        new AI[]{
-                                new POWorkerRush(utt, new FloodFillPathFinding()),
-                                new POLightRush(utt, new FloodFillPathFinding()),
-                                new PORangedRush(utt, new FloodFillPathFinding()),
-                                new POHeavyRush(utt, new FloodFillPathFinding()),
-                }),
-                new CombinedEvaluation())));
+        AI ai2 = new ContinuingAI(new StrategyTactics(utt));
+//        AI ai2 = new ContinuingAI(new PuppetNoPlan(new PuppetSearchAB(
+//                100, -1,
+//                -1, -1,
+//                100,
+//                new SingleChoiceConfigurableScript(new FloodFillPathFinding(),
+//                        new AI[]{
+//                                new POWorkerRush(utt, new FloodFillPathFinding()),
+//                                new POLightRush(utt, new FloodFillPathFinding()),
+//                                new PORangedRush(utt, new FloodFillPathFinding()),
+//                                new POHeavyRush(utt, new FloodFillPathFinding()),
+//                }),
+//                new CombinedEvaluation())));
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_BLACK);
 //        JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,false,PhysicalGameStatePanel.COLORSCHEME_WHITE);
 
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
         do{
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
-                PlayerAction pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs, 0));
-                PlayerAction pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs, 1));
+                PlayerAction pa1 = ai1.getAction(0, gs);
+                PlayerAction pa2 = ai2.getAction(1, gs);
 //                System.out.println(pa1);
 //                System.out.println(pa2);
                 gs.issueSafe(pa1);

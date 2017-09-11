@@ -18,7 +18,9 @@ import ai.puppet.PuppetNoPlan;
 import ai.puppet.PuppetSearchAB;
 import ai.puppet.SingleChoiceConfigurableScript;
 import rts.GameState;
+import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.ResourceUsage;
 import rts.UnitAction;
 import rts.units.Unit;
 import rts.units.UnitTypeTable;
@@ -201,9 +203,22 @@ public class StrategyTactics extends AIWithComputationBudget implements Interrup
 			//add extra actions
 			List<Unit> skip=new ArrayList<Unit>();
 			for(Pair<Unit,UnitAction> ua:paTactics.getActions()) {
-				if(ua.m_b.resourceUsage(ua.m_a, _gs.getPhysicalGameState()).consistentWith(paStrategy.getResourceUsage(), _gs)){
+			    // check to see if the action is legal!
+				PhysicalGameState pgs = _gs.getPhysicalGameState();
+                ResourceUsage r = ua.m_b.resourceUsage(ua.m_a, pgs);
+                boolean targetOccupied=false;
+                for(int position:r.getPositionsUsed()) {
+                    int y = position/pgs.getWidth();
+                    int x = position%pgs.getWidth();
+                    if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE ||
+                        pgs.getUnitAt(x, y) != null) {
+                        targetOccupied=true;
+                        break;
+                    }
+                }
+				if(!targetOccupied && r.consistentWith(paStrategy.getResourceUsage(), _gs)){
 					paFull.addUnitAction(ua.m_a, ua.m_b);
-					paFull.getResourceUsage().merge(ua.m_b.resourceUsage(ua.m_a, _gs.getPhysicalGameState()));
+					paFull.getResourceUsage().merge(r);
 					if(DEBUG>=1)
 						System.out.println("Frame: "+_gs.getTime()+", extra action: "+ua);
 					skip.add(ua.m_a);
